@@ -13,7 +13,7 @@ On the headset, open a terminal (Desktop Mode → **Konsole**, or `ssh steamos@<
 and paste:
 
 ```
-curl -fsSL https://raw.githubusercontent.com/@REPO@/main/get.sh | bash
+curl -fsSL https://raw.githubusercontent.com/akramboussanni/frame-hide/main/get.sh | bash
 ```
 
 That's it. It downloads Frame Hide, installs it and restarts SteamVR (the headset view reloads for

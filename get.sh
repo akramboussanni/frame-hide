@@ -1,8 +1,8 @@
 #!/bin/bash
 # One-line installer for Frame Hide. On the Steam Frame (Konsole in Desktop Mode, or SSH):
-#   curl -fsSL https://raw.githubusercontent.com/@REPO@/main/get.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/akramboussanni/frame-hide/main/get.sh | bash
 set -euo pipefail
-REPO="${FH_REPO:-@REPO@}"
+REPO="${FH_REPO:-akramboussanni/frame-hide}"
 BRANCH="${FH_BRANCH:-main}"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
