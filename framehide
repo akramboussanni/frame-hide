@@ -1,0 +1,17 @@
+#!/bin/bash
+# framehide: when to hide the Steam Frame controller models.
+#   framehide passthrough   hide only while passthrough (room view) is on  [default]
+#   framehide always        always hide
+#   framehide off           never hide
+#   framehide status        current mode + last driver log lines
+set -euo pipefail
+STATE="$HOME/.local/state/framehide"
+mkdir -p "$STATE"
+rm -f "$STATE/hidden"   # old test-build switch
+mode() { cat "$STATE/mode" 2>/dev/null || echo passthrough; }
+case "${1:-status}" in
+  passthrough|always|off) echo "$1" > "$STATE/mode"; echo "mode: $1" ;;
+  status) echo "mode: $(mode)"
+          [ -f "$STATE/driver.log" ] && { echo "-- driver log (last 5):"; tail -5 "$STATE/driver.log"; } || echo "-- driver not loaded yet (restart SteamVR)" ;;
+  *) echo "usage: framehide passthrough|always|off|status" >&2; exit 2 ;;
+esac
