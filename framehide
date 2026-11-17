@@ -13,5 +13,6 @@ case "${1:-status}" in
   passthrough|always|off) echo "$1" > "$STATE/mode"; echo "mode: $1" ;;
   status) echo "mode: $(mode)"
           [ -f "$STATE/driver.log" ] && { echo "-- driver log (last 5):"; tail -5 "$STATE/driver.log"; } || echo "-- driver not loaded yet (restart SteamVR)" ;;
-  *) echo "usage: framehide passthrough|always|off|status" >&2; exit 2 ;;
+  uninstall) exec bash "$HOME/.local/share/framehide/uninstall.sh" ;;
+  *) echo "usage: framehide passthrough|always|off|status|uninstall" >&2; exit 2 ;;
 esac

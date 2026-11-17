@@ -1,34 +1,29 @@
-# Frame Hide (test build)
+# Frame Hide
 
-Hides the Steam Frame's 3D controller models in Frame Home and passthrough. Tracking, buttons and the
-laser pointer are not touched: only the model SteamVR draws for each controller is swapped for an
-invisible copy, and swapped back when you show them again.
+Hides the Steam Frame's 3D controller models while passthrough (room view) is on, so you just see
+your room. Tracking, buttons and the laser pointer are not touched: only the model SteamVR draws for
+each controller is swapped for an invisible copy, and swapped back when passthrough goes off.
 
-Unofficial; relies on undocumented SteamVR behaviour, so a SteamVR update may break it.
+Unofficial and not affiliated with Valve. It relies on undocumented SteamVR behaviour, so a SteamVR
+update may break it.
 
-## How it works
+## Install
 
-- A small SteamVR driver with no device of its own, loaded from your home folder (same pattern as
-  frame-tint). It changes each Frame controller's `Prop_RenderModelName_String` between Valve's
-  model and `{framehide}framehide_left/right`.
-- The invisible models are made at install time from Valve's own model files: every visible part is
-  pointed at a zero-size triangle and marked not visible, and the reference points
-  (`tip`, `base`, `grip`, `handgrip`, `openxr_aim`, `openxr_grip`, ...) are kept as they are,
-  because the laser pointer and game aim/grip use them.
-- By default the models are hidden only while passthrough (room view) is on. The driver reads
-  SteamVR's own setting for that, `camera/enableConstructRoomView`: SteamVR sets it to true when
-  you turn passthrough on and removes it when you turn it off.
-
-## Install (on the headset)
+On the headset, open a terminal (Desktop Mode → **Konsole**, or `ssh steamos@<headset address>`)
+and paste:
 
 ```
-cd ~/frame-hide
-bash install.sh
-XDG_RUNTIME_DIR=/run/user/$(id -u) DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus systemctl --user restart steamvr.service
+curl -fsSL https://raw.githubusercontent.com/@REPO@/main/get.sh | bash
 ```
 
-Writes only: `~/.local/share/framehide`, `~/.local/bin/framehide`, `~/.local/state/framehide`, and the
-`external_drivers` entry in `~/.config/openvr/openvrpaths.vrpath` (via Valve's `vrpathreg`).
+That's it. It downloads Frame Hide, installs it and restarts SteamVR (the headset view reloads for
+a few seconds). Turn passthrough on and the controllers disappear.
+
+No `sudo`, no compiler and no PC needed. Everything goes into your home folder:
+`~/.local/share/framehide`, `~/.local/bin/framehide`, `~/.local/state/framehide`, plus the driver
+entry that Valve's `vrpathreg` adds to `~/.config/openvr/openvrpaths.vrpath`.
+
+Without the one-liner: download this repository, then `bash install.sh` inside it.
 
 ## Use
 
@@ -39,15 +34,34 @@ framehide off           # never hide
 framehide status        # current mode + last driver log lines
 ```
 
-When SteamVR shuts down the driver puts Valve's models back.
+When SteamVR shuts down, the driver puts Valve's models back.
 
 ## Uninstall
 
 ```
-bash ~/frame-hide/uninstall.sh
+framehide uninstall
 ```
-then restart SteamVR (command above).
 
-## Not in the test build yet
+Removes every file above and the driver entry, then restarts SteamVR.
 
-Dashboard button and controller shortcut. Those come after the live swap is confirmed in the headset.
+## How it works
+
+- A small SteamVR driver with no device of its own, loaded from your home folder (the same pattern
+  as [frame-tint](https://github.com/ugurcansakizli/frame-tint)). It switches each Frame controller's
+  `Prop_RenderModelName_String` between Valve's model and `{framehide}framehide_left/right`.
+- The invisible models are made at install time from Valve's own model files: every visible part
+  points at a zero-size triangle and is marked not visible. The reference points (`tip`, `base`,
+  `grip`, `handgrip`, `openxr_aim`, `openxr_grip`, ...) are kept as they are, because the laser
+  pointer and game aim/grip use them.
+- Passthrough detection: SteamVR sets `camera/enableConstructRoomView` to true when you turn
+  passthrough on and removes it when you turn it off. The driver checks it four times a second.
+- A prebuilt driver (aarch64) is in `prebuilt/`. `FH_BUILD=1 bash install.sh` builds it from
+  `src/` with `g++` instead.
+
+## Not done yet
+
+A dashboard button and a controller shortcut.
+
+## License
+
+MIT. Includes the OpenVR driver header (BSD-3-Clause, `third_party/openvr/LICENSE`).
